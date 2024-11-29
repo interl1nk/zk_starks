@@ -7,6 +7,14 @@
 ![Blockchain](https://img.shields.io/badge/tech-blockchain-blue)
 ![Cryptography](https://img.shields.io/badge/tech-cryptography-blue)
 ![Requirements](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)
+![ZKP](https://img.shields.io/badge/zk-proofs-important)
+![STARKs](https://img.shields.io/badge/STARKs-scaling-blue)
+![Quantum Resistance](https://img.shields.io/badge/security-quantum%20resistant-brightgreen)
+![Blockchain](https://img.shields.io/badge/blockchain-scalable-blue)
+![Decentralized](https://img.shields.io/badge/network-decentralized-lightgreen)
+![Support](https://img.shields.io/badge/support-give%20a%20star-brightgreen)
+![Contributor](https://img.shields.io/badge/contributors-welcome-orange)
+
 
 
 Автор: **Муравьев Герман Валерьевич**
