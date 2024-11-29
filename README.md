@@ -1,5 +1,14 @@
 # DAO "Национальный технологический центр цифровой криптографии" Российской Федерации
 
+
+![Stars](https://img.shields.io/github/stars/encrypted-systems/zk_starks?style=social)
+![License](https://img.shields.io/github/license/encrypted-systems/zk_starks)
+![Python](https://img.shields.io/badge/language-python-brightgreen)
+![Blockchain](https://img.shields.io/badge/tech-blockchain-blue)
+![Cryptography](https://img.shields.io/badge/tech-cryptography-blue)
+![Requirements](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)
+
+
 Автор: **Муравьев Герман Валерьевич**
 
 ***ВСЕ ПРАВА ЗАЩИЩЕНЫ ПО СРЕДСТВУ ИСПОЛЬЗОВАНИЯ MIT ЛИЦЕНЗИИ***
@@ -9,6 +18,9 @@
 связанных с незаконной деятельностью, включая, но не ограничиваясь, передачей средств,
 имеющих сомнительное происхождение, через интернет-сети.
 Все риски, связанные с нарушением законодательства, возлагаются на пользователя.
+
+## ⭐ Поддержите проект
+Если вам понравился этот репозиторий, пожалуйста, поставьте ⭐! Это мотивирует работать над новыми улучшениями и поддерживать проект.
 
 ---
 
