@@ -1,9 +1,8 @@
 import operator
-from functools import reduce
 try:
     from tqdm import tqdm
 except ModuleNotFoundError:
-    # tqdm - это обертка для итераторов, реализующая прогресс-бар. Если это
+    # `tqdm` - это обертка для итераторов, реализующая прогресс-бар. Если это
     # недоступно, просто верните сам итератор.
     tqdm = lambda x: x
 
@@ -13,14 +12,14 @@ from utils.list_utils import remove_trailing_elements, scalar_operation, two_lis
 
 def trim_trailing_zeros(p):
     """
-    Removes zeros from the end of a list.
+    Удаляет нули из конца списка.
     """
     return remove_trailing_elements(p, FieldElement.zero())
 
 
 def prod(values):
     """
-    Computes a product.
+    Вычисляет продукт.
     """
     len_values = len(values)
     if len_values == 0:
@@ -32,7 +31,7 @@ def prod(values):
 
 def latex_monomial(exponent, coef, var):
     """
-    Returns a string representation of a monomial as LaTeX.
+    Возвращает строковое представление монома в формате LaTeX.
     """
     if exponent == 0:
         return str(coef)
@@ -47,26 +46,26 @@ def latex_monomial(exponent, coef, var):
 
 class Polynomial:
     """
-    Represents a polynomial over FieldElement.
+    Представляет полином над FieldElement.
     """
 
     @classmethod
     def X(cls):
         """
-        Returns the polynomial x.
+        Возвращает многочлен x.
         """
         return cls([FieldElement.zero(), FieldElement.one()])
 
     def __init__(self, coefficients, var='x'):
-        # Internally storing the coefficients in self.poly, least-significant (i.e. free term)
-        # first, so $9 - 3x^2 + 19x^5$ is represented internally by the list  [9, 0, -3, 0, 0, 19].
-        # Note that coefficients is copied, so the caller may freely modify the given argument.
+        # Внутреннее хранение коэффициентов в self.poly, наименее значимый (т.е. свободный член)
+        # первым, поэтому $9 - 3x^2 + 19x^5$ представляется внутри списка [9, 0, -3, 0, 0, 19].
+        # Обратите внимание, что коэффициенты копируются, поэтому вызывающая сторона может свободно изменять данный аргумент.
         self.poly = remove_trailing_elements(coefficients, FieldElement.zero())
         self.var = var
 
     def _repr_latex_(self):
         """
-        Returns a LaTeX representation of the Polynomial, for Jupyter.
+        Возвращает представление полинома в формате LaTeX для Jupyter.
         """
         if not self.poly:
             return '$0$'
@@ -99,7 +98,7 @@ class Polynomial:
     @staticmethod
     def typecast(other):
         """
-        Constructs a Polynomial from `FieldElement` or `int`.
+        Создает многочлен из `FieldElement` или `int`.
         """
         if isinstance(other, int):
             other = FieldElement(other)
@@ -113,14 +112,14 @@ class Polynomial:
         return Polynomial(two_lists_tuple_operation(
             self.poly, other.poly, operator.add, FieldElement.zero()))
 
-    __radd__ = __add__  # To support <int> + <Polynomial> (as in `1 + x + x**2`).
+    __radd__ = __add__  # Для поддержки <int> + <Polynomial> (как в `1 + x + x**2`).
 
     def __sub__(self, other):
         other = Polynomial.typecast(other)
         return Polynomial(two_lists_tuple_operation(
             self.poly, other.poly, operator.sub, FieldElement.zero()))
 
-    def __rsub__(self, other):  # To support <int> - <Polynomial> (as in `1 - x + x**2`).
+    def __rsub__(self, other):  # Для поддержки <int> - <Polynomial> (как в `1 - x + x**2`).
         return -(self - other)
 
     def __neg__(self):
@@ -136,12 +135,12 @@ class Polynomial:
         res = [FieldElement(x) for x in res]
         return Polynomial(res)
 
-    __rmul__ = __mul__  # To support <int> * <Polynomial>.
+    __rmul__ = __mul__  # Для поддержки <int> * <Polynomial>.
 
     def compose(self, other):
         """
-        Composes this polynomial with `other`.
-        Example:
+        Составляет данный многочлен с `другими`.
+        Пример:
         >>> f = X**2 + X
         >>> g = X + 1
         >>> f.compose(g) == (2 + 3*X + X**2)
@@ -155,13 +154,13 @@ class Polynomial:
 
     def qdiv(self, other):
         """
-        Returns q, r the quotient and remainder polynomials respectively, such that
-        f = q * g + r, where deg(r) < deg(g).
-        * Assert that g is not the zero polynomial.
+        Возвращает q, r соответственно многочлены с коэффициентом и остатком, такие что
+        f = q * g + r, где deg(r) < deg(g).
+        * Утверждение, что g не является нулевым многочленом.
         """
         other = Polynomial.typecast(other)
         pol2 = trim_trailing_zeros(other.poly)
-        assert pol2, 'Dividing by zero polynomial.'
+        assert pol2, 'Деление на нулевой многочлен.'
         pol1 = trim_trailing_zeros(self.poly)
         if not pol1:
             return [], []
@@ -177,14 +176,14 @@ class Polynomial:
                 rem[i] = rem[i] - (tmp * coef)
                 if rem[i] != FieldElement.zero():
                     last_non_zero = i
-            # Eliminate trailing zeroes (i.e. make r end with its last non-zero coefficient).
+            # Устраните нули в конце (т.е. сделайте так, чтобы r заканчивался последним ненулевым коэффициентом).
             rem = rem[:last_non_zero + 1]
             deg_dif = len(rem) - len(pol2)
         return Polynomial(trim_trailing_zeros(quotient)), Polynomial(rem)
 
     def __truediv__(self, other):
         div, mod = self.qdiv(other)
-        assert mod == 0, 'Polynomials are not divisible.'
+        assert mod == 0, 'Многочлены не являются делимыми.'
         return div
 
     def __mod__(self, other):
@@ -193,28 +192,28 @@ class Polynomial:
     @staticmethod
     def monomial(degree, coefficient):
         """
-        Constructs the monomial coefficient * x**degree.
+        Строит коэффициент монома * x**degree.
         """
         return Polynomial([FieldElement.zero()] * degree + [coefficient])
 
     @staticmethod
     def gen_linear_term(point):
         """
-        Generates the polynomial (x-p) for a given point p.
+        Генерирует многочлен (x-p) для заданной точки p.
         """
         return Polynomial([FieldElement.zero() - point, FieldElement.one()])
 
     def degree(self):
         """
-        The polynomials are represented by a list so the degree is the length of the list minus the
-        number of trailing zeros (if they exist) minus 1.
-        This implies that the degree of the zero polynomial will be -1.
+        Многочлены представлены в виде списка, поэтому степень равна длине списка минус
+        количество нулей в конце списка (если они есть) минус 1.
+        Это означает, что степень нулевого многочлена будет равна -1.
         """
         return len(trim_trailing_zeros(self.poly)) - 1
 
     def get_nth_degree_coefficient(self, n):
         """
-        Returns the coefficient of x**n
+        Возвращает коэффициент x**n
         """
         if n > self.degree():
             return FieldElement.zero()
@@ -223,16 +222,16 @@ class Polynomial:
 
     def scalar_mul(self, scalar):
         """
-        Multiplies polynomial by a scalar
+        Умножает многочлен на скаляр
         """
         return Polynomial(scalar_operation(self.poly, operator.mul, scalar))
 
     def eval(self, point):
         """
-        Evaluates the polynomial at the given point using Horner evaluation.
+        Оценивает многочлен в заданной точке с помощью оценки Хорнера.
         """
         point = FieldElement.typecast(point).val
-        # Doing this with ints (as opposed to `FieldElement`s) speeds up eval significantly.
+        # Работа с цифрами (в отличие от `FieldElement`) значительно ускоряет выполнение eval.
         val = 0
         for coef in self.poly[::-1]:
             val = (val * point + coef.val) % FieldElement.k_modulus
@@ -240,8 +239,8 @@ class Polynomial:
 
     def __call__(self, other):
         """
-        If `other` is an int or a FieldElement, evaluates the polynomial on `other` (in the field).
-        If `other` is a polynomial, composes self with `other` as self(other(x)).
+        Если `other` - int или FieldElement, вычисляется многочлен на `other` (в поле).
+        Если `other` является многочленом, то компонует self с `other` как self(other(x)).
         """
         if isinstance(other, (int)):
             other = FieldElement(other)
@@ -253,7 +252,7 @@ class Polynomial:
 
     def __pow__(self, other):
         """
-        Calculates self**other using repeated squaring.
+        Вычисляет self**other с помощью повторного возведения в квадрат.
         """
         assert other >= 0
         res = Polynomial([FieldElement(1)])
@@ -268,25 +267,25 @@ class Polynomial:
         return res
 
 
-# The python representation of the formal variable x.
+# python представление формальной переменной x.
 X = Polynomial.X()
 
 
 def calculate_lagrange_polynomials(x_values):
     """
-    Given the x_values for evaluating some polynomials, it computes part of the lagrange polynomials
-    required to interpolate a polynomial over this domain.
+    Учитывая значения x_ для оценки некоторых полиномов, он вычисляет часть полиномов Лагранжа
+    необходимых для интерполяции полинома над этой областью.
     """
     lagrange_polynomials = []
     monomials = [Polynomial.monomial(1, FieldElement.one()) -
                  Polynomial.monomial(0, x) for x in x_values]
     numerator = prod(monomials)
     for j in tqdm(range(len(x_values))):
-        # In the denominator, we have:
+        # В знаменателе имеем:
         # (x_j-x_0)(x_j-x_1)...(x_j-x_{j-1})(x_j-x_{j+1})...(x_j-x_{len(X)-1})
         denominator = prod([x_values[j] - x for i, x in enumerate(x_values) if i != j])
-        # Numerator is a bit more complicated, since we need to compute a poly multiplication here.
-        # Similarly to the denominator, we have:
+        # Числитель немного сложнее, так как здесь нам нужно вычислить полиумножение.
+        # Аналогично со знаменателем, имеем:
         # (x-x_0)(x-x_1)...(x-x_{j-1})(x-x_{j+1})...(x-x_{len(X)-1})
         cur_poly, _ = numerator.qdiv(monomials[j].scalar_mul(denominator))
         lagrange_polynomials.append(cur_poly)
@@ -295,9 +294,9 @@ def calculate_lagrange_polynomials(x_values):
 
 def interpolate_poly_lagrange(y_values, lagrange_polynomials):
     """
-    :param y_values: y coordinates of the points.
-    :param lagrange_polynomials: the polynomials obtained from calculate_lagrange_polynomials.
-    :return: the interpolated poly/
+    :param y_values: y координаты y точек.
+    :param lagrange_polynomials: полиномы, полученные в результате calculate_lagrange_polynomials.
+    :return: 'the interpolated poly'
     """
     poly = Polynomial([])
     for j, y_value in enumerate(y_values):
@@ -307,13 +306,13 @@ def interpolate_poly_lagrange(y_values, lagrange_polynomials):
 
 def interpolate_poly(x_values, y_values):
     """
-    Returns a polynomial of degree < len(x_values) that evaluates to y_values[i] on x_values[i] for
-    all i.
+    Возвращает многочлен степени < len(x_values), который оценивает y_values[i] по x_values[i] для
+    всех i.
     """
     assert len(x_values) == len(y_values)
     assert all(isinstance(val, FieldElement) for val in x_values),\
-        'Not all x_values are FieldElement'
+        'Не все значения x_values являются FieldElement'
     lp = calculate_lagrange_polynomials(x_values)
     assert all(isinstance(val, FieldElement) for val in y_values),\
-        'Not all y_values are FieldElement'
+        'Не все значения y_values являются FieldElement'
     return interpolate_poly_lagrange(y_values, lp)
